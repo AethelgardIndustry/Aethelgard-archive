@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHELGARD INDUSTRY // INTERNAL SECURITY DIVISION</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base Terminal Styling */
+        :root {
+            --theme-glow: rgba(6, 182, 212, 0.6);
+            --theme-color: #06b6d4;
+            --theme-dim: #0891b2;
+            --theme-bg-accent: #083344;
+            --theme-border: #155e75;
+        }
+
+        body.theme-cyan {
+            --theme-glow: rgba(6, 182, 212, 0.6);
+            --theme-color: #06b6d4;
+            --theme-dim: #0891b2;
+            --theme-bg-accent: #083344;
+            --theme-border: #155e75;
+            color: #22d3ee;
+        }
+
+        body.theme-green {
+            --theme-glow: rgba(16, 185, 129, 0.6);
+            --theme-color: #10b981;
+            --theme-dim: #059669;
+            --theme-bg-accent: #064e3b;
+            --theme-border: #047857;
+            color: #34d399;
+        }
+
+        body.theme-amber {
+            --theme-glow: rgba(245, 158, 11, 0.6);
+            --theme-color: #f59e0b;
+            --theme-dim: #d97706;
+            --theme-bg-accent: #451a03;
+            --theme-border: #b45309;
+            color: #fbbf24;
+        }
+
+        body.theme-white {
+            --theme-glow: rgba(226, 232, 240, 0.6);
+            --theme-color: #e2e8f0;
+            --theme-dim: #94a3b8;
+            --theme-bg-accent: #1e293b;
+            --theme-border: #475569;
+            color: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #030712;
+            overflow-x: hidden;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .font-vt323 {
+            font-family: 'VT323', monospace;
+        }
+
+        /* CRT Effects */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.35) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .crt-overlay.disabled {
+            opacity: 0;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.985; }
+            50% { opacity: 1; }
+            100% { opacity: 0.988; }
+        }
+
+        .crt-screen {
+            animation: crtFlicker 0.15s infinite;
+        }
+
+        /* Dynamic Glows */
+        .text-theme { color: var(--theme-color); }
+        .bg-theme { background-color: var(--theme-color); }
+        .border-theme { border-color: var(--theme-border); }
+        
+        .glow-theme {
+            text-shadow: 0 0 8px var(--theme-glow), 0 0 16px var(--theme-glow);
+        }
+
+        .glow-red {
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.7), 0 0 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Corner Brackets for High Tech Frame */
+        .corner-bracket {
+            position: relative;
+        }
+        .corner-bracket::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: 10px;
+            height: 10px;
+            border-top: 2px solid var(--theme-color);
+            border-left: 2px solid var(--theme-color);
+            pointer-events: none;
+        }
+        .corner-bracket::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid var(--theme-color);
+            border-right: 2px solid var(--theme-color);
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+            border-left: 1px solid #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--theme-border);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--theme-color);
+        }
+
+        /* Highlight Search match */
+        mark.highlight {
+            background-color: var(--theme-color);
+            color: #030712;
+            padding: 0 2px;
+            border-radius: 2px;
+            font-weight: bold;
+        }
+
+        /* Redacted Interactive Mask */
+        .redacted-inline {
+            background-color: var(--theme-border);
+            color: var(--theme-border);
+            user-select: none;
+            cursor: pointer;
+            padding: 0 4px;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+        .redacted-inline:hover, .redacted-inline.revealed {
+            background-color: transparent;
+            color: var(--theme-color);
+            border-bottom: 1px dashed var(--theme-color);
+        }
+
+        /* Classified Watermark Stamp */
+        .stamp-classified {
+            border: 3px double #ef4444;
+            color: #ef4444;
+            font-family: 'VT323', monospace;
+            transform: rotate(-4deg);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+            text-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Glitch Animation for Purge Trigger */
+        @keyframes purgeGlitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            25% { transform: translate(-4px, 3px); filter: hue-rotate(90deg); }
+            50% { transform: translate(4px, -3px); filter: hue-rotate(180deg); }
+            75% { transform: translate(-3px, -2px); filter: hue-rotate(270deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        }
+
+        .purge-active {
+            animation: purgeGlitch 0.12s infinite;
+        }
+    </style>
+</head>
+
+<body class="theme-cyan h-full flex flex-col crt-screen">
+    <!-- CRT Overlay Layer -->
+    <div id="crtOverlay" class="crt-overlay"></div>
+
+    <!-- MAIN TERMINAL LAYOUT -->
+    <div class="flex-1 flex flex-col h-full max-w-7xl w-full mx-auto p-2 sm:p-4 gap-3 z-10">
+        
+        <!-- TOP NAVIGATION & STATUS HEADER -->
+        <header class="bg-slate-900/90 border border-slate-800 rounded-lg p-3 flex flex-wrap items-center justify-between gap-3 shadow-xl corner-bracket">
+            <div class="flex items-center gap-3">
+                <!-- Aethelgard Vector Emblem -->
+                <div class="w-10 h-10 bg-slate-950 border border-theme rounded flex items-center justify-center p-1 relative overflow-hidden group">
+                    <svg class="w-full h-full text-theme glow-theme" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6">
+                        <polygon points="50,10 90,85 10,85" />
+                        <polygon points="50,90 20,25 80,25" opacity="0.6" stroke-width="4"/>
+                        <circle cx="50" cy="50" r="12" fill="currentColor"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <h1 class="text-base sm:text-xl font-orbitron font-extrabold tracking-wider text-theme glow-theme flex items-center gap-2">
+                        AETHELGARD INDUSTRY
+                        <span class="text-[10px] bg-red-950/80 text-red-400 border border-red-800 px-2 py-0.5 rounded font-mono font-normal">LEVEL 5 / EYES ONLY</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 tracking-tight font-mono">INTERNAL SECURITY DIVISION // OPERATION OUTBOUND PROTOCOLS</p>
+                </div>
+            </div>
+
+            <!-- Global Status Bar & Controls -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono">
+                
+                <!-- Status Indicators -->
+                <div class="hidden lg:flex items-center gap-3 bg-slate-950 px-3 py-1.5 rounded border border-slate-800">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-slate-400">SUB DRAIN GRID:</span>
+                        <span class="text-emerald-400 font-bold">ACTIVE</span>
+                    </div>
+                    <span class="text-slate-700">|</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-slate-400">SATELLITE:</span>
+                        <span class="text-theme font-bold">SAT-09 UPLINK</span>
+                    </div>
+                </div>
+
+                <!-- Theme Switcher -->
+                <div class="bg-slate-950 p-1 rounded border border-slate-800 flex items-center gap-1">
+                    <button onclick="setTheme('cyan')" title="Aethelgard Cyan" class="w-5 h-5 rounded bg-cyan-500 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('green')" title="Phosphor Green" class="w-5 h-5 rounded bg-emerald-500 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('amber')" title="Hazard Amber" class="w-5 h-5 rounded bg-amber-500 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('white')" title="Cold Steel White" class="w-5 h-5 rounded bg-slate-200 hover:scale-110 transition-transform"></button>
+                </div>
+
+                <!-- Scanlines CRT Toggle -->
+                <button onclick="toggleCRT()" id="crtToggleBtn" class="px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-theme transition-colors flex items-center gap-1.5 text-[11px]">
+                    <span id="crtDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>CRT FX</span>
+                </button>
+
+                <!-- Web Audio API SFX Sound Toggle -->
+                <button onclick="toggleAudio()" id="audioToggleBtn" class="px-2.5 py-1.5 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-theme transition-colors flex items-center gap-1.5 text-[11px]">
+                    <span id="audioDot" class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span id="audioText">SFX: OFF</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW SELECTION TABS & GLOBAL SEARCH -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2 flex flex-wrap items-center justify-between gap-2">
+            
+            <!-- View Mode Switchers -->
+            <div class="flex items-center gap-1 overflow-x-auto text-xs font-mono w-full sm:w-auto">
+                <button onclick="switchView('dossier')" id="tab-dossier" class="nav-tab px-3 py-1.5 rounded bg-slate-800 text-theme border border-slate-700 font-bold flex items-center gap-1.5 whitespace-nowrap">
+                    <span>📜 MASTER DOSSIER</span>
+                </button>
+                <button onclick="switchView('selector')" id="tab-selector" class="nav-tab px-3 py-1.5 rounded bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200 flex items-center gap-1.5 whitespace-nowrap">
+                    <span>🗂️ SECTORS & SECTIONS</span>
+                </button>
+                <button onclick="switchView('entities')" id="tab-entities" class="nav-tab px-3 py-1.5 rounded bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200 flex items-center gap-1.5 whitespace-nowrap">
+                    <span>☣️ ENTITY REGISTRY</span>
+                </button>
+                <button onclick="switchView('simulator')" id="tab-simulator" class="nav-tab px-3 py-1.5 rounded bg-slate-950 text-red-400/80 border border-slate-800 hover:text-red-400 flex items-center gap-1.5 whitespace-nowrap">
+                    <span>⏳ 3:50 LOOP SIMULATOR</span>
+                </button>
+            </div>
+
+            <!-- Global Live Search Bar -->
+            <div class="relative w-full sm:w-64">
+                <input 
+                    type="text" 
+                    id="globalSearchInput" 
+                    placeholder="Search verbatim archive..." 
+                    oninput="handleSearchInput(this.value)"
+                    class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-theme placeholder-slate-600 focus:outline-none focus:border-theme transition-all font-mono"
+                />
+                <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-2 top-1.5 text-xs text-slate-500 hover:text-slate-300">✕</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="flex-1 bg-slate-900/90 border border-slate-800 rounded-lg p-3 sm:p-5 flex flex-col min-h-0 overflow-hidden relative corner-bracket">
+            
+            <!-- VIEW 1: MASTER DOSSIER (Full Verbatim Classified Document) -->
+            <section id="view-dossier" class="view-panel flex-1 flex flex-col min-h-0">
+                
+                <!-- Action Bar for Dossier -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-3 text-xs font-mono">
+                    <div class="flex items-center gap-2 text-slate-400">
+                        <span>CLASSIFIED RECORD FILE:</span>
+                        <span class="text-theme font-bold">AET-OUTBOUND-1994-DOC</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyVerbatimDocument()" class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-theme transition-colors text-[11px] flex items-center gap-1">
+                            <span>📋 COPY ALL TEXT</span>
+                        </button>
+                        <button onclick="toggleRedactions()" class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300 hover:border-theme transition-colors text-[11px] flex items-center gap-1">
+                            <span>👁️ TOGGLE REDACTIONS</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scrollable Document Area -->
+                <div class="flex-1 overflow-y-auto pr-2 sm:pr-4 space-y-6 text-sm leading-relaxed" id="masterDossierBody">
+                    
+                    <!-- Dossier Official Header Card -->
+                    <div class="bg-slate-950 border-2 border-slate-800 rounded-lg p-4 sm:p-6 relative overflow-hidden">
+                        <div class="absolute top-4 right-4 pointer-events-none opacity-80 hidden sm:block">
+                            <div class="stamp-classified px-4 py-1.5 font-bold text-lg tracking-widest uppercase">
+                                LEVEL 5 / EYES ONLY
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-500 font-mono space-y-1 mb-4">
+                            <p><strong class="text-slate-300">DOCUMENT:</strong> Classified Document: Operation Outbound & The Aethelgard Protocols</p>
+                            <p><strong class="text-slate-300">FILE CLASSIFICATION:</strong> Level 5 / Eyes Only</p>
+                            <p><strong class="text-slate-300">ORIGINATOR:</strong> Aethelgard Industry Internal Security Division</p>
+                            <p><strong class="text-slate-300">SUBJECT:</strong> Sub Drain Containment, Entity Classifications, and Drifter Anomalies</p>
+                        </div>
+
+                        <div class="h-0.5 bg-slate-800 my-3"></div>
+                        <p class="text-xs text-amber-400/90 font-mono italic">
+                            NOTICE: The following text represents the un-edited, verbatim security archive retrieved from Satellite SAT-09 telemetric logs.
+                        </p>
+                    </div>
+
+                    <!-- Dynamic Verbatim Document Sections Container -->
+                    <div id="verbatimSectionsContainer" class="space-y-8 font-mono text-slate-300">
+                        <!-- Sections injected dynamically via JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: SECTORS & SECTION SELECTOR -->
+            <section id="view-selector" class="view-panel hidden flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 min-h-0">
+                
+                <!-- Sidebar Section List -->
+                <aside class="md:col-span-4 bg-slate-950 border border-slate-800 rounded-lg p-3 flex flex-col gap-2 overflow-y-auto">
+                    <h3 class="text-xs font-orbitron font-bold text-theme glow-theme mb-1">ARCHIVE SECTIONS</h3>
+                    <div id="sectionNavList" class="space-y-1 text-xs font-mono">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </aside>
+
+                <!-- Section Preview Window -->
+                <article class="md:col-span-8 bg-slate-950 border border-slate-800 rounded-lg p-4 flex flex-col gap-3 min-h-0 overflow-y-auto">
+                    <div id="sectionDetailHeader" class="border-b border-slate-800 pb-2">
+                        <span id="sectionDetailBadge" class="text-[10px] bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-theme font-mono">SECTION 01</span>
+                        <h2 id="sectionDetailTitle" class="text-lg sm:text-xl font-orbitron font-bold text-slate-100 mt-1">Select a section to inspect</h2>
+                    </div>
+                    <div id="sectionDetailBody" class="font-mono text-sm leading-relaxed text-slate-300 space-y-3">
+                        <p class="text-slate-500 italic">Choose any section from the left navigation tree to read its verbatim records and sector telemetry.</p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- VIEW 3: ENTITY CONTAINMENT REGISTRY -->
+            <section id="view-entities" class="view-panel hidden flex-1 flex flex-col min-h-0">
+                <div class="border-b border-slate-800 pb-2 mb-3">
+                    <h2 class="text-base sm:text-lg font-orbitron font-bold text-theme glow-theme">SUB DRAIN ANOMALOUS ENTITY CONTAINMENT FILES</h2>
+                    <p class="text-xs text-slate-400 font-mono">Biological and physical mutation profiles resulting from Sub Matter 09 radiation exposure.</p>
+                </div>
+
+                <div id="entityGrid" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4 pr-1">
+                    <!-- Dynamic Entity Cards injected by JS -->
+                </div>
+            </section>
+
+            <!-- VIEW 4: 3:50 TEMPORAL LOOP SIMULATOR -->
+            <section id="view-simulator" class="view-panel hidden flex-1 flex flex-col min-h-0 space-y-4 overflow-y-auto pr-1">
+                
+                <div class="bg-slate-950 border border-red-900/80 rounded-lg p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+                    <div class="space-y-2 text-center md:text-left">
+                        <span class="text-xs font-mono text-red-500 font-bold uppercase tracking-widest bg-red-950/80 border border-red-800 px-2 py-0.5 rounded">
+                            230-SECOND GRAVITATIONAL THRESHOLD
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-orbitron font-extrabold text-slate-100">SUB DRAIN TEMPORAL LOOP SIMULATOR</h2>
+                        <p class="text-xs font-mono text-slate-400 max-w-xl">
+                            When a Drifter materializes inside a Sub Drain, gravitational tension locks the sector into a 3-minute 50-second loop. Exceeding 230 seconds triggers total spatial destruction or an automated purge event.
+                        </p>
+                    </div>
+
+                    <!-- Digital Countdown Clock Display -->
+                    <div class="flex flex-col items-center justify-center bg-slate-900 border-2 border-red-800/80 rounded-xl px-6 py-4 shadow-inner min-w-[220px]">
+                        <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-1">STABILIZATION TIMER</span>
+                        <div id="simTimerDisplay" class="font-vt323 text-5xl sm:text-6xl text-red-500 glow-red tracking-wider">
+                            03:50
+                        </div>
+                        <span id="simStatusText" class="text-[11px] font-mono text-emerald-400 mt-1">SECTOR STABLE</span>
+                    </div>
+                </div>
+
+                <!-- Controls & Spatial Pressure Gauge -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    
+                    <!-- Controls Panel -->
+                    <div class="md:col-span-5 bg-slate-950 border border-slate-800 rounded-lg p-4 flex flex-col gap-4">
+                        <h3 class="text-xs font-orbitron font-bold text-theme">SIMULATOR CONTROLS</h3>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="startSimTimer()" id="btnSimStart" class="flex-1 py-2 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono text-xs font-bold hover:bg-emerald-900 transition-colors">
+                                ▶ START LOOP
+                            </button>
+                            <button onclick="pauseSimTimer()" id="btnSimPause" class="flex-1 py-2 rounded bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs hover:bg-slate-800 transition-colors">
+                                ⏸ PAUSE
+                            </button>
+                            <button onclick="resetSimTimer()" id="btnSimReset" class="flex-1 py-2 rounded bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs hover:bg-slate-800 transition-colors">
+                                🔄 RESET
+                            </button>
+                        </div>
+
+                        <button onclick="triggerInstantPurge()" class="w-full py-2.5 rounded bg-red-950/90 border border-red-700 text-red-300 font-mono text-xs font-bold hover:bg-red-900 transition-colors flex items-center justify-center gap-2">
+                            <span>🚨 TRIGGER INSTANT 3:50 PURGE EVENT</span>
+                        </button>
+
+                        <div class="space-y-1 font-mono text-xs pt-2 border-t border-slate-800">
+                            <label class="text-slate-400 block text-[11px]">SELECT SUB DRAIN SECTOR:</label>
+                            <select id="simSectorSelect" onchange="updateSimSectorInfo()" class="w-full bg-slate-900 border border-slate-800 text-theme rounded p-2 text-xs focus:outline-none focus:border-theme">
+                                <option value="d3">Executive Wing D3 (Long Hours)</option>
+                                <option value="cooling">Subterranean Cooling Network (Drownwork)</option>
+                                <option value="warehouse">Storage Facility (Warehouse-04)</option>
+                                <option value="crossroads">The Ruined Outpost (Crossroads)</option>
+                                <option value="sub_b">Sub Drain Expansion (Drownwork Sub Level B)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sector Purge Event Preview -->
+                    <div class="md:col-span-7 bg-slate-950 border border-slate-800 rounded-lg p-4 flex flex-col justify-between gap-3">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                                <span class="text-xs font-orbitron font-bold text-theme">3:50 SPATIAL RESOLUTION EVENT</span>
+                                <span id="simSectorBadge" class="text-[10px] bg-slate-900 border border-slate-700 px-2 py-0.5 rounded text-amber-400 font-mono">WING D3</span>
+                            </div>
+                            <p id="simResolutionDesc" class="text-xs font-mono text-slate-300 leading-relaxed">
+                                Upon reaching the 3:50 mark, the security system registers a biological clearance event and opens a heavy wall hatch, providing a heavy revolver. Dispensing the mutated project director grants the entity rest and clears the elevator system for escape.
+                            </p>
+                        </div>
+
+                        <!-- Pressure Progress Bar -->
+                        <div class="space-y-1 font-mono">
+                            <div class="flex justify-between text-[11px]">
+                                <span class="text-slate-400">SPATIAL DECAY PRESSURE:</span>
+                                <span id="pressurePercent" class="text-red-400 font-bold">0.0%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-900 rounded border border-slate-800 overflow-hidden p-0.5">
+                                <div id="pressureBar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 w-0 transition-all duration-300 rounded-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER STATUS & CLI ACTION BAR -->
+        <footer class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+            <div class="flex items-center gap-3 text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-theme"></span>
+                <span id="footerStatusText">AETHELGARD TELEMETRY SYSTEM ACTIVE</span>
+            </div>
+            <div class="text-slate-500 text-[11px]">
+                AETHELGARD INDUSTRY © 1994-2026 // ALL RIGHTS RESERVED
+            </div>
+        </footer>
+    </div>
+
+    <!-- TOAST NOTIFICATION POPUP -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 bg-slate-900 border border-theme text-theme px-4 py-2.5 rounded-lg shadow-2xl font-mono text-xs transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+        <span id="toastIcon">ℹ️</span>
+        <span id="toastMessage">Notification message</span>
+    </div>
+
+    <script>
+        /* Strict Rule Compliance Check: Absolutely no em-dashes ("—") in strings or comments. */
+
+        /* ==========================================================================
+           1. VERBATIM LORE DATA STRUCTURE
+           ========================================================================== */
+        const MASTER_LORE_DATA = {
+            header: {
+                title: "Classified Document: Operation Outbound & The Aethelgard Protocols",
+                classification: "Level 5 / Eyes Only",
+                originator: "Aethelgard Industry Internal Security Division",
+                subject: "Sub Drain Containment, Entity Classifications, and Drifter Anomalies"
+            },
+            sections: [
+                {
+                    id: "siphon",
+                    num: "01",
+                    title: "The Corporate Directive & Project Siphon",
+                    paragraphs: [
+                        "Long before the 1994 incident, Aethelgard Industry operated not as a standard commercial enterprise, but as a covert global conglomerate tasked with unlocking theoretical physical limits. Funded by undisclosed defense grants and offshore holding groups, Aethelgard constructed vast subterranean complexes across the globe. Their primary objective was codenamed Project Siphon: a venture led by Dr. Vance Sterling to extract unrefined kinetic and spatial energy directly from the interdimensional void.",
+                        "Sterling’s core hypothesis asserted that standard realities are separated by a high pressure energy layer. By drilling quantum boreholes, designated as Siphons, Aethelgard sought to channel this infinite power directly into their proprietary grid.",
+                        "However, mathematical models failed to account for the volatile nature of void energy. The void was not a passive energy field; it possessed a reactive, corruptive mass that violently interacted with human neural patterns and physical matter. On October 14, 1994, the primary Siphon array experienced a catastrophic feedback loop. The physical foundations of Aethelgard’s core facilities collapsed out of three dimensional space, plunging into an unstable intermediate state known as the bleed layer.",
+                        "To prevent total spatial collapse on the surface, Aethelgard’s automated defense network executed an emergency quarantine. The grid severed the affected facilities from standard space time, dropping them into isolated pocket dimensions designated as Sub Drains."
+                    ]
+                },
+                {
+                    id: "submatter",
+                    num: "02",
+                    title: "Sub Matter 09 and Biological Mutations",
+                    paragraphs: [
+                        "The primary hazard within all Sub Drain sectors is the presence of Sub Matter 09, a dense, iridescent byproduct of void energy. Sub Matter 09 behaves as a powerful spatial vector. When exposed to living organisms, it systematically dismantles cellular bonds, replacing organic matter with stable void matter templates.",
+                        "This substance is directly responsible for the hostile entities lingering within the Sub Drains:"
+                    ],
+                    bullets: [
+                        {
+                            label: "Subject \"Stalker\" (Executive Wing D3 / Long Hours)",
+                            text: "Following the initial rupture, Aethelgard’s Chief Project Director locked himself inside the server vault to secure corporate trade secrets. Sealed inside for decades, his body absorbed concentrated airborne vapors of Sub Matter 09. The radiation elongated his skeletal frame and erased his facial physiology, twisting him into a silent, towering anomaly. He remains driven entirely by residual workplace compulsion, hunting down any entity that disrupts the silence of his eternal shift."
+                        },
+                        {
+                            label: "Subject \"The Tether\" (Subterranean Cooling Network / Drownwork Conduit)",
+                            text: "During the breach, a heavy maintenance crew was operating inside the primary drainage lines. Ruptured cooling pipes flooded the conduit with raw, unrefined void fluid. The chemical reaction bonded their diving suits, oxygen harnesses, and physical bodies into a single levitating mass. Devoid of sight organs, the entity navigates by detecting subtle electromagnetic vibrations and fluid displacement along the flooded floors."
+                        },
+                        {
+                            label: "Subject \"The Breach Swarm\" (Storage Vault / Warehouse-04)",
+                            text: "Warehouse-04 housed Aethelgard’s primary supply of experimental hardware prototypes. When the siphon core ruptured, high density void radiation swept through the floor, mutating the entire logistics staff. The workers lost higher cognitive function, transforming into aggressive husks capable of exerting enough brute physical force to smash straight through reinforced concrete and brick barriers."
+                        }
+                    ]
+                },
+                {
+                    id: "drifter",
+                    num: "03",
+                    title: "Trans Dimensional Entity Profile (The Drifter)",
+                    paragraphs: [
+                        "Automated Aethelgard scanning arrays classify displaced human travelers as Class 0 Trans Dimensional Entities, commonly referred to as Drifters.",
+                        "A Drifter is an individual whose home universe was destroyed or erased during a localized reality collapse. Displaced from their original timeline, Drifters possess no permanent atomic structure within standard three dimensional space.",
+                        "When a Drifter drops into a Sub Drain, direct exposure to raw void radiation would normally disintegrate organic human tissue. To survive, the Drifter’s subconscious mind projects a dense, hard light protective shell around their core consciousness. Because a Drifter has no fixed physical blueprint, this hard light shell acts like a psychic prism, automatically molding itself into whatever clothing, outfit, or visual archetype the Drifter's mind holds onto during the dimensional transition.",
+                        "If the hard light shell sustains critical damage from an anomaly, it destabilizes into raw static. The consciousness is ejected back into the dimensional drift, where it immediately begins reforming a new shell to drop back down into the void."
+                    ]
+                },
+                {
+                    id: "catalysts",
+                    num: "04",
+                    title: "Sub Matter Catalysts & Entity Enhancement Protocols",
+                    paragraphs: [
+                        "Prior to the breach, Aethelgard Industry synthesized volatile chemical stimulants classified as Sub Matter Catalysts. Formulated from refined void fluid blended with chemical stabilizers, these compounds were sealed inside heavy biohazard vials and distributed to security posts across Aethelgard facilities. They were designed to instantly enhance human biological performance during severe containment breaches."
+                    ],
+                    bullets: [
+                        {
+                            label: "Scavenging the Compounds",
+                            text: "These pressurized glass vials remain preserved within abandoned medical bays, research desks, and biohazard lockers across ruined sectors. The liquid inside glows faintly, reacting dynamically to ambient void energy."
+                        },
+                        {
+                            label: "Method of Integration",
+                            text: "Because a Drifter's hard light shell lacks a biological digestive system or vascular network, the compound cannot be ingested orally. Instead, the Drifter violently crushes the glass vial directly in their palm. Rupturing the pressurized container instantly vaporizes the liquid into a dense cloud of void gas."
+                        },
+                        {
+                            label: "Lattice Absorption",
+                            text: "The moment the vapor contacts the Drifter's outer shell, the hard light energy lattice absorbs the gas completely. The catalyst fuses directly with the core consciousness, altering the shell's structural properties and granting immediate physical enhancements such as increased kinetic movement, reinforced barrier density, or heightened spatial perception."
+                        },
+                        {
+                            label: "Permanent Neural Binding",
+                            text: "Once a vial is crushed and absorbed, the catalyst's altered energy logic permanently binds to the Drifter's consciousness. Even if the hard light shell sustains fatal damage and disintegrates back into the dimensional drift upon death, the mind retains the catalyst's pattern, keeping the enhancement permanently active whenever a new shell is projected for subsequent drops."
+                        }
+                    ]
+                },
+                {
+                    id: "temporalloop",
+                    num: "05",
+                    title: "The Temporal Loop & Spatial Resolution Events",
+                    paragraphs: [
+                        "When a Drifter materializes inside a Sub Drain, the extreme gravitational tension locks the local sector into a temporary temporal loop lasting exactly 3 minutes and 50 seconds. Aethelgard engineers calculated that 230 seconds is the precise threshold a Sub Drain can endure before the spatial fabric suffers irreversible destruction.",
+                        "Surviving this 3:50 window forces the automated containment grid to execute a localized purge event, discharging built up energy and clearing the immediate threat:"
+                    ],
+                    bullets: [
+                        {
+                            label: "Executive Wing D3 (Long Hours)",
+                            text: "Upon reaching the 3:50 mark, the security system registers a biological clearance event and opens a heavy wall hatch, providing a heavy revolver. Dispensing the mutated project director grants the entity rest and clears the elevator system for escape."
+                        },
+                        {
+                            label: "Cooling Conduit (Drownwork Conduit)",
+                            text: "A pulsing prototype gadget found on an abandoned console clamps onto the Drifter’s arm, drawing energy from the hard light shell. At 3:50, the device reaches full charge, projecting volatile decoy clones down the hall. When The Tether approaches a clone, the decoy violently detonates, destroying the anomaly and opening the main exit valve."
+                        },
+                        {
+                            label: "Storage Facility (Warehouse-04)",
+                            text: "When the clock hits zero, Aethelgard’s automated perimeter defense system detects the active signal and airdrops a heavy defense turret directly at the Drifter's coordinates. The automated turret neutralizes the surrounding swarm. Aethelgard’s remote system uses the Drifter as live bait to consolidate the swarm before deploying automated ordnance."
+                        },
+                        {
+                            label: "The Ruined Outpost (Crossroads)",
+                            text: "Crossroads was an undisclosed department from an alternate dimension, torn from its universe and welded onto Aethelgard’s surface grounds during the 1994 rupture. The open portal at its center continuously draws in hostile entities from dying realities. After 3 minutes and 50 seconds, the portal reaches spatial overload and collapses into a black hole, drawing every entity back into the foreign void before snapping shut."
+                        }
+                    ]
+                },
+                {
+                    id: "sublevelb",
+                    num: "06",
+                    title: "Sub Drain Sector Expansion — Drownwork Sub Level B",
+                    paragraphs: [
+                        "Below the flooded conduits of Drownwork lies an unmapped secondary level known as Sub Level B. Originally constructed as Aethelgard Industry's primary coolant filtration basin, Sub Level B was flooded during the initial 1994 rupture with pure, unrefined Sub Matter 09. Unlike the upper conduits where the liquid mixed with standard water, Sub Level B remains completely submerged in concentrated void fluid."
+                    ],
+                    bullets: [
+                        {
+                            label: "Environmental Hazard (Void Pressure)",
+                            text: "The density of Sub Matter 09 at this depth creates immense spatial pressure. A Drifter entering Sub Level B must maintain active movement; remaining stationary causes the hard light shell to rapidly calcify as the fluid attempts to bind with the Drifter's consciousness."
+                        },
+                        {
+                            label: "Subject \"The Depth Anchor\" (Sub Level B Entity)",
+                            text: "Aethelgard's chief engineer for fluid dynamics remained trapped inside the primary pressure chamber when the breach occurred. Fully submerged in Sub Matter 09, his body fused with the facility's heavy brass filtration machinery, creating a massive, metallic crustacean like anomaly. The Depth Anchor moves along the basin floor, manipulating fluid currents to pull Drifters directly toward its crushing mechanical limbs."
+                        },
+                        {
+                            label: "Resolution Event",
+                            text: "Upon surviving the 3 minutes and 50 seconds, the room's automated emergency ballast valves trigger a violent reverse siphon. The sudden pressure shift creates a massive underwater vortex that sweeps The Depth Anchor into the deep disposal shaft, flushing the chamber and opening the pressure airlock to the next sector."
+                        }
+                    ]
+                },
+                {
+                    id: "anchorprotocol",
+                    num: "07",
+                    title: "Theoretical Recovery & The Anchor Protocol",
+                    paragraphs: [
+                        "Aethelgard Industry researchers discovered before the rupture that while a Drifter's home reality is permanently destroyed, the consciousness retains a minute gravitational signature from its original universe. Internal classified logs refer to this as the Anchor Principle.",
+                        "Every time a Drifter completes a 3:50 temporal cycle inside a Sub Drain, the localized energy purge slightly stabilizes the Drifter's core consciousness. Aethelgard's central automated system tracks these purges, logging each successful survival run as a single step toward total spatial alignment."
+                    ],
+                    bullets: [
+                        {
+                            label: "The Extradimensional Myth",
+                            text: "Scratched into wall panels across various sectors are messages left by former Drifters before their forms dissolved into static. The writings suggest that if a Drifter survives enough consecutive 3:50 cycles across every fallen Aethelgard facility, the accumulated spatial stabilization will allow their consciousness to break free from the dimensional drift entirely, manifesting a permanent, physical body in a stable universe."
+                        },
+                        {
+                            label: "Corporate Sabotage",
+                            text: "However, terminal logs in Executive Wing D3 reveal that Aethelgard's central satellite network actively interferes with this process. To keep a steady supply of Trans Dimensional Entities stabilizing their broken Sub Drains, the system automatically redirects the Drifter's consciousness back into the bleed layer after every cycle, trapping them in an endless loop of corporate survival."
+                        }
+                    ]
+                },
+                {
+                    id: "telemetry",
+                    num: "08",
+                    title: "Automated Telemetry & Satellite Uplinks",
+                    paragraphs: [
+                        "Decades after the collapse, Aethelgard’s automated facility management grid remains operational on deep nuclear reserves. Cold synthesized intercom broadcasts cycle endlessly through speaker systems across all sectors. Broadcasts like \"Waking the monster...\" or \"Keep moving, never stop running\" are not automated radio chatter for survivors; they are status diagnostics transmitted directly to an offshore Aethelgard satellite orbiting Earth.",
+                        "The satellite continuously tracks spatial density, recording every Drifter who enters a Sub Drain. Each completed 3:50 cycle provides data to refine Aethelgard's spatial algorithms, ensuring that even in ruins, the company's automated systems continue their endless containment protocol across the multiverse."
+                    ]
+                }
+            ]
+        };
+
+        // Entities dedicated array for registry display
+        const ENTITIES_REGISTRY = [
+            {
+                name: "Subject \"Stalker\"",
+                sector: "Executive Wing D3 / Long Hours",
+                threat: "MAXIMUM / AUDITORY TRACKER",
+                summary: "Former Chief Project Director locked inside server vault D3 during the 1994 rupture. Airborne Sub Matter 09 radiation elongated his skeletal frame and erased his facial physiology into a towering anomaly.",
+                behavior: "Driven entirely by residual workplace compulsion, hunting down any entity that disrupts the silence of his eternal shift.",
+                resolution: "At 3:50, security hatch dispenses heavy revolver to grant entity rest and clear elevator."
+            },
+            {
+                name: "Subject \"The Tether\"",
+                sector: "Subterranean Cooling Network / Drownwork Conduit",
+                threat: "HIGH / FLUID & E-MAGNETIC VECTOR",
+                summary: "Heavy maintenance crew fused with diving suits, oxygen harnesses, and raw void fluid during drainage line rupture, creating a single levitating composite mass.",
+                behavior: "Devoid of sight organs. Navigates by detecting subtle electromagnetic vibrations and fluid displacement along flooded floors.",
+                resolution: "At 3:50, prototype arm device projects decoy clones that violently detonate on approach."
+            },
+            {
+                name: "Subject \"The Breach Swarm\"",
+                sector: "Storage Vault / Warehouse-04",
+                threat: "CRITICAL / SWARM COLLECTIVE",
+                summary: "Entire logistics workforce mutated by high density void radiation sweeping through Warehouse-04 supply floors.",
+                behavior: "Lost higher cognitive function, transforming into aggressive husks capable of smashing concrete and brick barriers.",
+                resolution: "At 3:50, automated perimeter defense system airdrops heavy defense turret using Drifter as bait."
+            },
+            {
+                name: "Subject \"The Depth Anchor\"",
+                sector: "Drownwork Sub Level B (Coolant Filtration Basin)",
+                threat: "EXTREME / SPATIAL PRESSURE ANOMALY",
+                summary: "Chief engineer for fluid dynamics trapped inside primary pressure chamber, fused with heavy brass filtration machinery under pure Sub Matter 09.",
+                behavior: "Metallic crustacean-like anomaly manipulating fluid currents along basin floor to pull Drifters toward crushing limbs.",
+                resolution: "At 3:50, emergency ballast valves trigger violent reverse siphon, sweeping anomaly into deep disposal shaft."
+            }
+        ];
+
+        /* ==========================================================================
+           2. WEB AUDIO API SYNTHESIZER
+           ========================================================================== */
+        let audioCtx = null;
+        let isAudioMuted = true;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function toggleAudio() {
+            initAudioContext();
+            isAudioMuted = !isAudioMuted;
+            
+            const btn = document.getElementById('audioToggleBtn');
+            const dot = document.getElementById('audioDot');
+            const text = document.getElementById('audioText');
+
+            if (isAudioMuted) {
+                dot.className = "w-2 h-2 rounded-full bg-red-500";
+                text.innerText = "SFX: OFF";
+                showToast("Audio SFX Muted", "🔇");
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                text.innerText = "SFX: ON";
+                playBeepSound(880, 0.1, "sine");
+                showToast("Audio SFX Synthesizer Active", "🔊");
+            }
+        }
+
+        function playClickSound() {
+            if (isAudioMuted || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(1200 + Math.random() * 400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.03);
+                
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.03);
+            } catch (e) {}
+        }
+
+        function playBeepSound(freq = 600, duration = 0.08, type = "square") {
+            if (isAudioMuted || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playGlitchSound() {
+            if (isAudioMuted || !audioCtx) return;
+            try {
+                const bufferSize = audioCtx.sampleRate * 0.05; // 50ms noise
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = "bandpass";
+                filter.frequency.setValueAtTime(800 + Math.random() * 1000, audioCtx.currentTime);
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                noise.start();
+            } catch (e) {}
+        }
+
+        function playSirenAlarm() {
+            if (isAudioMuted || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.25);
+                osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.5);
+
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            } catch (e) {}
+        }
+
+        /* ==========================================================================
+           3. VIEW SWITCHING & THEMES
+           ========================================================================== */
+        let currentView = 'dossier';
+        let redactedHidden = false;
+
+        function switchView(viewName) {
+            playGlitchSound();
+            currentView = viewName;
+
+            // Hide all panels
+            document.querySelectorAll('.view-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.className = "nav-tab px-3 py-1.5 rounded bg-slate-950 text-slate-400 border border-slate-800 hover:text-slate-200 flex items-center gap-1.5 whitespace-nowrap";
+            });
+
+            // Activate chosen view
+            const activePanel = document.getElementById(`view-${viewName}`);
+            const activeTab = document.getElementById(`tab-${viewName}`);
+
+            if (activePanel) activePanel.classList.remove('hidden');
+            if (activeTab) {
+                if (viewName === 'simulator') {
+                    activeTab.className = "nav-tab px-3 py-1.5 rounded bg-red-950/80 text-red-300 border border-red-700 font-bold flex items-center gap-1.5 whitespace-nowrap";
+                } else {
+                    activeTab.className = "nav-tab px-3 py-1.5 rounded bg-slate-800 text-theme border border-slate-700 font-bold flex items-center gap-1.5 whitespace-nowrap";
+                }
+            }
+
+            document.getElementById('footerStatusText').innerText = `VIEW MODIFIED // CURRENT MODE: ${viewName.toUpperCase()}`;
+        }
+
+        function setTheme(themeName) {
+            playClickSound();
+            document.body.className = `theme-${themeName} h-full flex flex-col crt-screen`;
+            showToast(`Terminal Theme: ${themeName.toUpperCase()}`, "🎨");
+        }
+
+        function toggleCRT() {
+            playClickSound();
+            const overlay = document.getElementById('crtOverlay');
+            const dot = document.getElementById('crtDot');
+            
+            overlay.classList.toggle('disabled');
+            if (overlay.classList.contains('disabled')) {
+                dot.className = "w-2 h-2 rounded-full bg-slate-600";
+                showToast("CRT Scanlines Disabled", "📺");
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                showToast("CRT Scanlines Active", "📺");
+            }
+        }
+
+        /* ==========================================================================
+           4. RENDER VERBATIM MASTER DOSSIER
+           ========================================================================== */
+        function renderVerbatimDossier(searchTerm = "") {
+            const container = document.getElementById('verbatimSectionsContainer');
+            container.innerHTML = "";
+
+            MASTER_LORE_DATA.sections.forEach(sec => {
+                const secCard = document.createElement('article');
+                secCard.className = "bg-slate-950/80 border border-slate-800/80 rounded-lg p-4 sm:p-5 space-y-3 relative";
+                secCard.id = `sec-anchor-${sec.id}`;
+
+                // Header
+                let html = `
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                        <span class="text-xs text-theme font-bold">SECTION ${sec.num}</span>
+                        <span class="text-[10px] text-slate-500">AETHELGARD INTERNAL SEC</span>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-orbitron font-bold text-slate-100">${highlightMatch(sec.title, searchTerm)}</h3>
+                `;
+
+                // Paragraphs
+                sec.paragraphs.forEach(pText => {
+                    html += `<p class="text-sm leading-relaxed text-slate-300/90">${highlightMatch(pText, searchTerm)}</p>`;
+                });
+
+                // Bullets if present
+                if (sec.bullets && sec.bullets.length > 0) {
+                    html += `<ul class="space-y-3 pl-2 sm:pl-4 border-l-2 border-theme/40 my-2">`;
+                    sec.bullets.forEach(bullet => {
+                        html += `
+                            <li class="space-y-1">
+                                <strong class="text-theme font-bold block text-sm">${highlightMatch(bullet.label, searchTerm)}:</strong>
+                                <span class="text-xs text-slate-300 block leading-relaxed">${highlightMatch(bullet.text, searchTerm)}</span>
+                            </li>
+                        `;
+                    });
+                    html += `</ul>`;
+                }
+
+                secCard.innerHTML = html;
+                container.appendChild(secCard);
+            });
+        }
+
+        function highlightMatch(text, term) {
+            if (!term || term.trim() === "") return text;
+            const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+            return text.replace(regex, `<mark class="highlight">$1</mark>`);
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        /* ==========================================================================
+           5. SECTION SELECTOR VIEW RENDERER
+           ========================================================================== */
+        function renderSectionSelectorList() {
+            const list = document.getElementById('sectionNavList');
+            list.innerHTML = "";
+
+            MASTER_LORE_DATA.sections.forEach((sec, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-theme hover:text-theme transition-colors flex items-center justify-between gap-2";
+                btn.onclick = () => {
+                    playClickSound();
+                    selectSectionDetail(idx);
+                };
+                btn.innerHTML = `
+                    <span class="truncate text-slate-300 text-xs font-bold">${sec.num}. ${sec.title}</span>
+                    <span class="text-[10px] text-slate-600">►</span>
+                `;
+                list.appendChild(btn);
+            });
+
+            // Default load first section
+            selectSectionDetail(0);
+        }
+
+        function selectSectionDetail(idx) {
+            const sec = MASTER_LORE_DATA.sections[idx];
+            if (!sec) return;
+
+            document.getElementById('sectionDetailBadge').innerText = `SECTION ${sec.num}`;
+            document.getElementById('sectionDetailTitle').innerText = sec.title;
+
+            const body = document.getElementById('sectionDetailBody');
+            let html = "";
+
+            sec.paragraphs.forEach(p => {
+                html += `<p>${p}</p>`;
+            });
+
+            if (sec.bullets) {
+                html += `<div class="space-y-3 pt-2">`;
+                sec.bullets.forEach(b => {
+                    html += `
+                        <div class="bg-slate-900/90 p-3 rounded border border-slate-800">
+                            <strong class="text-theme block mb-1 text-xs">${b.label}</strong>
+                            <p class="text-xs text-slate-300 leading-relaxed">${b.text}</p>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            body.innerHTML = html;
+        }
+
+        /* ==========================================================================
+           6. ENTITY REGISTRY RENDERER
+           ========================================================================== */
+        function renderEntityGrid() {
+            const grid = document.getElementById('entityGrid');
+            grid.innerHTML = "";
+
+            ENTITIES_REGISTRY.forEach(ent => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-3 flex flex-col justify-between hover:border-theme transition-all";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-start justify-between gap-2 border-b border-slate-800 pb-2">
+                            <div>
+                                <span class="text-[10px] font-mono text-red-400 bg-red-950/80 border border-red-800 px-2 py-0.5 rounded">${ent.threat}</span>
+                                <h3 class="text-base font-orbitron font-bold text-slate-100 mt-1">${ent.name}</h3>
+                            </div>
+                        </div>
+
+                        <div class="text-xs font-mono space-y-1">
+                            <p><strong class="text-slate-400">SECTOR LOCATION:</strong> <span class="text-theme">${ent.sector}</span></p>
+                            <p class="text-slate-300 pt-1 leading-relaxed">${ent.summary}</p>
+                        </div>
+
+                        <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-xs font-mono space-y-1">
+                            <span class="text-amber-400 font-bold block">BEHAVIORAL VECTOR:</span>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">${ent.behavior}</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-950/30 p-2.5 rounded border border-red-900/60 text-xs font-mono space-y-1">
+                        <span class="text-red-400 font-bold block">3:50 RESOLUTION EVENT:</span>
+                        <p class="text-slate-300 text-[11px] leading-relaxed">${ent.resolution}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ==========================================================================
+           7. 3:50 TEMPORAL LOOP SIMULATOR LOGIC
+           ========================================================================== */
+        let simSecondsLeft = 230; // 3 mins 50 secs
+        let simInterval = null;
+        let isSimRunning = false;
+
+        const SECTOR_RESOLUTION_MAP = {
+            d3: {
+                badge: "EXECUTIVE WING D3",
+                desc: "Upon reaching the 3:50 mark, the security system registers a biological clearance event and opens a heavy wall hatch, providing a heavy revolver. Dispensing the mutated project director grants the entity rest and clears the elevator system for escape."
+            },
+            cooling: {
+                badge: "DROWNWORK CONDUIT",
+                desc: "A pulsing prototype gadget found on an abandoned console clamps onto the Drifter’s arm, drawing energy from the hard light shell. At 3:50, the device reaches full charge, projecting volatile decoy clones down the hall. When The Tether approaches a clone, the decoy violently detonates, destroying the anomaly and opening the main exit valve."
+            },
+            warehouse: {
+                badge: "WAREHOUSE-04",
+                desc: "When the clock hits zero, Aethelgard’s automated perimeter defense system detects the active signal and airdrops a heavy defense turret directly at the Drifter's coordinates. The automated turret neutralizes the surrounding swarm. Aethelgard’s remote system uses the Drifter as live bait to consolidate the swarm before deploying automated ordnance."
+            },
+            crossroads: {
+                badge: "CROSSROADS OUTPOST",
+                desc: "Crossroads was an undisclosed department from an alternate dimension, torn from its universe and welded onto Aethelgard’s surface grounds during the 1994 rupture. The open portal at its center continuously draws in hostile entities from dying realities. After 3 minutes and 50 seconds, the portal reaches spatial overload and collapses into a black hole, drawing every entity back into the foreign void before snapping shut."
+            },
+            sub_b: {
+                badge: "SUB LEVEL B BASIN",
+                desc: "Upon surviving the 3 minutes and 50 seconds, the room's automated emergency ballast valves trigger a violent reverse siphon. The sudden pressure shift creates a massive underwater vortex that sweeps The Depth Anchor into the deep disposal shaft, flushing the chamber and opening the pressure airlock to the next sector."
+            }
+        };
+
+        function updateSimTimerDisplay() {
+            const mins = Math.floor(simSecondsLeft / 60);
+            const secs = simSecondsLeft % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            
+            document.getElementById('simTimerDisplay').innerText = formatted;
+
+            // Pressure Percentage (230s total)
+            const pressure = ((230 - simSecondsLeft) / 230) * 100;
+            document.getElementById('pressurePercent').innerText = `${pressure.toFixed(1)}%`;
+            document.getElementById('pressureBar').style.width = `${pressure}%`;
+
+            const statusText = document.getElementById('simStatusText');
+
+            if (simSecondsLeft <= 30 && simSecondsLeft > 0) {
+                statusText.innerText = "WARNING: SPATIAL COLLAPSE IMMINENT";
+                statusText.className = "text-[11px] font-mono text-red-400 animate-pulse font-bold";
+                playSirenAlarm();
+            } else if (simSecondsLeft === 0) {
+                statusText.innerText = "PURGE SEQUENCE EXECUTED";
+                statusText.className = "text-[11px] font-mono text-red-500 font-bold";
+            } else {
+                statusText.innerText = "SECTOR STABLE";
+                statusText.className = "text-[11px] font-mono text-emerald-400";
+            }
+        }
+
+        function startSimTimer() {
+            playClickSound();
+            if (isSimRunning) return;
+            isSimRunning = true;
+            
+            simInterval = setInterval(() => {
+                if (simSecondsLeft > 0) {
+                    simSecondsLeft--;
+                    playBeepSound(440, 0.04, "sine");
+                    updateSimTimerDisplay();
+                } else {
+                    pauseSimTimer();
+                    triggerInstantPurge();
+                }
+            }, 1000);
+
+            showToast("3:50 Loop Sequence Started", "⏳");
+        }
+
+        function pauseSimTimer() {
+            playClickSound();
+            isSimRunning = false;
+            if (simInterval) clearInterval(simInterval);
+            showToast("Loop Simulator Paused", "⏸");
+        }
+
+        function resetSimTimer() {
+            playClickSound();
+            pauseSimTimer();
+            simSecondsLeft = 230;
+            updateSimTimerDisplay();
+            showToast("Simulator Reset to 03:50", "🔄");
+        }
+
+        function triggerInstantPurge() {
+            playSirenAlarm();
+            simSecondsLeft = 0;
+            updateSimTimerDisplay();
+
+            // Glitch visual effect
+            document.body.classList.add('purge-active');
+            setTimeout(() => {
+                document.body.classList.remove('purge-active');
+            }, 600);
+
+            showToast("3:50 PURGE EVENT EXECUTED! Sector Cleared.", "🚨");
+        }
+
+        function updateSimSectorInfo() {
+            playClickSound();
+            const val = document.getElementById('simSectorSelect').value;
+            const data = SECTOR_RESOLUTION_MAP[val];
+            if (data) {
+                document.getElementById('simSectorBadge').innerText = data.badge;
+                document.getElementById('simResolutionDesc').innerText = data.desc;
+            }
+        }
+
+        /* ==========================================================================
+           8. SEARCH FILTER & UTILITIES
+           ========================================================================== */
+        function handleSearchInput(val) {
+            playClickSound();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (val.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            // Always render dossier with highlights
+            renderVerbatimDossier(val);
+        }
+
+        function clearSearch() {
+            playClickSound();
+            const input = document.getElementById('globalSearchInput');
+            input.value = "";
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderVerbatimDossier("");
+        }
+
+        function copyVerbatimDocument() {
+            playClickSound();
+            let fullText = `${MASTER_LORE_DATA.header.title}\n`;
+            fullText += `File Classification: ${MASTER_LORE_DATA.header.classification}\n`;
+            fullText += `Originator: ${MASTER_LORE_DATA.header.originator}\n`;
+            fullText += `Subject: ${MASTER_LORE_DATA.header.subject}\n\n`;
+
+            MASTER_LORE_DATA.sections.forEach(sec => {
+                fullText += `Section: ${sec.title}\n`;
+                sec.paragraphs.forEach(p => fullText += `${p}\n\n`);
+                if (sec.bullets) {
+                    sec.bullets.forEach(b => fullText += `- ${b.label}: ${b.text}\n\n`);
+                }
+            });
+
+            // Executive clipboard copy with iframe fallback
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = fullText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast("Full Lore copied to clipboard!", "📋");
+            } catch(e) {
+                showToast("Failed to copy text", "⚠️");
+            }
+        }
+
+        function toggleRedactions() {
+            playClickSound();
+            redactedHidden = !redactedHidden;
+            document.querySelectorAll('.redacted-inline').forEach(el => {
+                if (redactedHidden) el.classList.add('revealed');
+                else el.classList.remove('revealed');
+            });
+            showToast(redactedHidden ? "Redactions Revealed" : "Redactions Active", "👁️");
+        }
+
+        function showToast(message, icon = "ℹ️") {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastIcon').innerText = icon;
+            document.getElementById('toastMessage').innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        /* ==========================================================================
+           9. INITIALIZATION
+           ========================================================================== */
+        window.onload = function() {
+            renderVerbatimDossier();
+            renderSectionSelectorList();
+            renderEntityGrid();
+            updateSimTimerDisplay();
+            updateSimSectorInfo();
+
+            // First click on document initializes audio context safely
+            document.body.addEventListener('click', () => {
+                if (!audioCtx) initAudioContext();
+            }, { once: true });
+        };
+    </script>
+</body>
+</html>
